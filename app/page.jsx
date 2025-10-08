@@ -19,7 +19,7 @@ export default function Home() {
           </p>
             <div className="mx-auto">
   <Image
-    src="/Images/P1.jpg"
+    src="/Images/P1.JPG"
     alt="Poster"
     width={384} 
     height={256}
