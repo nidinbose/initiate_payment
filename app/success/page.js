@@ -39,7 +39,7 @@ export default function SuccessPage() {
         <div className="bg-green-50 rounded-lg p-4 mb-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-gray-700">Amount Paid:</span>
-            <span className="text-xl font-bold text-green-600">₹2.00</span>
+            <span className="text-xl font-bold text-green-600">₹99.00</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-700">Status:</span>

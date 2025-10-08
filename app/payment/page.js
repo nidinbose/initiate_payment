@@ -22,7 +22,7 @@ export default function PaymentPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: name.trim(), amount: 100 }), 
+        body: JSON.stringify({ name: name.trim(), amount: 9900 }), 
       });
 
       const data = await response.json();
