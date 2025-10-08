@@ -89,7 +89,7 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-orange-900 to-yellow-800 text-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-300 via-blue-600 to-black text-white flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-black/40 backdrop-blur-sm rounded-2xl shadow-xl p-8 space-y-6 border border-white/10">
         <div className="text-center">
           <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -111,15 +111,15 @@ export default function PaymentPage() {
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none transition-all text-white placeholder-gray-400"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-white placeholder-gray-400"
               placeholder="Enter your full name"
               required
             />
           </div>
 
-          <div className="bg-gradient-to-r from-yellow-500/20 to-orange-600/20 rounded-lg p-4 border border-yellow-500/30">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-900/20 rounded-lg p-4 border border-blue-500/30">
             <div className="flex justify-between items-center">
-              <span className="text-gray-300">Amount to pay:</span>
+              <span className="text-gray-100">Amount to pay:</span>
               <span className="text-2xl font-bold text-yellow-400">₹99</span>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function PaymentPage() {
           <button
             onClick={handlePayment}
             disabled={isLoading || !name.trim()}
-            className="w-full bg-gradient-to-r from-yellow-400 to-orange-600 hover:from-yellow-500 hover:to-orange-700 disabled:from-gray-600 disabled:to-gray-700 text-black font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
+            className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
           >
             {isLoading ? (
               <>
