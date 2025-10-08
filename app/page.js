@@ -1,154 +1,202 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [name, setName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handlePayment = async () => {
-    if (!name.trim()) {
-      alert('Please enter your name');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/create-order', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: name.trim(), amount: 100 }), // 100 paise = ₹1
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        const options = {
-          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-          amount: data.order.amount,
-          currency: data.order.currency,
-          name: 'Premium Service',
-          description: 'Payment for Premium Service',
-          order_id: data.order.id,
-          handler: async function (response) {
-            try {
-              const verifyResponse = await fetch('/api/verify-payment', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                  name: name.trim(),
-                }),
-              });
-
-              const verifyData = await verifyResponse.json();
-              
-              if (verifyData.success) {
-                router.push('/success');
-              } else {
-                alert('Payment verification failed');
-              }
-            } catch (error) {
-              console.error('Payment verification error:', error);
-              alert('Payment verification failed');
-            }
-          },
-          prefill: {
-            name: name.trim(),
-          },
-          theme: {
-            color: '#3B82F6',
-          },
-        };
-
-        const razorpay = new window.Razorpay(options);
-        razorpay.open();
-      } else {
-        alert('Failed to create order');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      alert('Payment failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-6">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-            </svg>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 md:px-6 py-16">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent leading-tight">
+            Stop Procrastinating. Get Unstuck.
+          </h1>
+          <p className="text-lg md:text-xl lg:text-2xl mb-10 text-gray-300">
+            <em>
+              The 2-Hour Masterclass to Hack Your Lazy Brain into Maximum
+              Productivity.
+            </em>
+          </p>
+
+          {/* Floating Payment Button */}
+          <div className="fixed bottom-5 right-5 z-50">
+            <button
+              onClick={() => router.push('/payment')}
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-full shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2 md:gap-3 text-base md:text-lg"
+            >
+              <span className="text-xl md:text-2xl">₹2</span>
+              <span>Join Masterclass</span>
+            </button>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Premium Service</h1>
-          <p className="text-gray-600 mb-6">Get access to our premium features with a simple payment</p>
         </div>
 
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-              Your Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-              placeholder="Enter your full name"
-              required
-            />
+        {/* Problem Section */}
+        <section className="max-w-4xl mx-auto mb-16 px-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-center text-red-400">
+            The Problem: Why You're Stuck
+          </h2>
+          <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+            <p className="text-base md:text-lg leading-relaxed mb-6">
+              You have talent, drive, and huge goals. But every morning, your
+              brain tells you to hit the snooze button on your life. You delay,
+              you feel guilty, and you watch your most important ambitions
+              gather dust.
+            </p>
+            <p className="text-base md:text-lg leading-relaxed font-semibold text-yellow-400">
+              It's not a lack of willpower; it's a glitch in your system. Your
+              brain is designed to save energy, and it sees hard work as a
+              threat. The UNSTUCK Masterclass is the solution.
+            </p>
           </div>
+        </section>
 
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Amount to pay:</span>
-              <span className="text-2xl font-bold text-green-600">₹1</span>
+        {/* Promise Section */}
+        <section className="max-w-4xl mx-auto mb-16 px-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-center text-green-400">
+            The Promise: Your 2-Hour Transformation
+          </h2>
+          <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+            <p className="text-base md:text-lg leading-relaxed mb-8">
+              In just <strong className="text-yellow-400">120 minutes</strong>,
+              this intense, actionable Masterclass gives you the psychological
+              tools to{' '}
+              <strong className="text-yellow-400">transform your life</strong>{' '}
+              and instantly overcome procrastination. We focus on{' '}
+              <strong className="text-yellow-400">
+                brain chemistry, not calendars.
+              </strong>
+            </p>
+
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <Feature
+                  icon="⚡"
+                  title="Instant Start Trigger"
+                  desc="Master the one simple 5-minute technique that forces your brain to stop resisting and start executing any task immediately."
+                />
+                <Feature
+                  icon="🧠"
+                  title="Rewire Motivation"
+                  desc="Learn how to tap into your natural dopamine cycles so that being productive actually feels easier and more rewarding than procrastinating."
+                />
+              </div>
+
+              <div className="space-y-4">
+                <Feature
+                  icon="🎯"
+                  title="Master Deep Focus"
+                  desc="Get the proven framework to build blocks of 'unbreakable' focus, eliminating mental noise and digital distractions without burning out."
+                />
+                <Feature
+                  icon="🔓"
+                  title="Unlock Time"
+                  desc="Stop wasting hours fighting yourself. Free up significant time and mental energy to pursue the activities and goals that truly matter."
+                />
+              </div>
             </div>
           </div>
+        </section>
 
-          <button
-            onClick={handlePayment}
-            disabled={isLoading || !name.trim()}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
-          >
-            {isLoading ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Processing...
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-                Pay ₹1 Now
-              </>
-            )}
-          </button>
-        </div>
+        {/* Target Audience */}
+        <section className="max-w-4xl mx-auto mb-16 px-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-center text-blue-400">
+            This Masterclass is for You if:
+          </h2>
+          <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+            <ul className="space-y-4 text-base md:text-lg">
+              <ListItem text="You constantly plan your week but never finish your priorities." />
+              <ListItem text="You feel stressed and guilty about the things you know you should be doing." />
+              <ListItem text="You start projects strong but always lose momentum halfway through." />
+              <ListItem text="You need a fast, proven fix — not a lengthy, drawn-out course." />
+            </ul>
+          </div>
+        </section>
 
-        <div className="text-center">
-          <p className="text-xs text-gray-500">
-            Secure payment powered by Razorpay
-          </p>
-        </div>
+        {/* Class Details */}
+        <section className="max-w-4xl mx-auto mb-16 px-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-center text-purple-400">
+            Class Details & Enrollment
+          </h2>
+          <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+            <h3 className="text-xl md:text-2xl font-bold mb-6 text-center">
+              The UNSTUCK 2-Hour Live Masterclass
+            </h3>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm md:text-base">
+                <thead>
+                  <tr className="border-b border-white/20">
+                    <th className="pb-4 pr-4 font-bold">Feature</th>
+                    <th className="pb-4 font-bold">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <TableRow feature="Duration" details="Just 2 Hours (Intense & Actionable)" />
+                  <TableRow feature="Date & Time" details="Coming Soon - Live Online Session" />
+                  <TableRow feature="Format" details="Live Online Session (Recording provided)" />
+                  <TableRow feature="Bonus" details='"Momentum Activation" Workbook & Checklist' />
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-8 p-6 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 rounded-xl border border-yellow-400/30">
+              <p className="text-base md:text-lg font-semibold text-center">
+                Stop losing your best ideas to procrastination. Invest 2 hours.
+                Transform your life.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Instructor Section */}
+        <section className="max-w-4xl mx-auto mb-16 px-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-8 text-center text-indigo-400">
+            Meet Your Instructor
+          </h2>
+          <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/10">
+            <p className="text-base md:text-lg leading-relaxed">
+              Hi, I'm Abimanue Analytix. I designed this 2-hour hack after years
+              of studying behavioral psychology and neuroscience. My goal is to
+              give you the most powerful tools{' '}
+              <strong className="text-yellow-400">without the fluff</strong>. If
+              you're ready to stop fighting your brain and start using its full
+              power, I'll see you in the Masterclass.
+            </p>
+          </div>
+        </section>
       </div>
     </div>
+  );
+}
+
+function Feature({ icon, title, desc }) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="text-2xl">{icon}</span>
+      <div>
+        <h3 className="font-bold text-lg">{title}</h3>
+        <p className="text-gray-300">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function ListItem({ text }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="text-red-500 text-xl">•</span>
+      <span>{text}</span>
+    </li>
+  );
+}
+
+function TableRow({ feature, details }) {
+  return (
+    <tr className="border-b border-white/10">
+      <td className="py-4 pr-4 font-semibold">{feature}</td>
+      <td className="py-4">{details}</td>
+    </tr>
   );
 }
