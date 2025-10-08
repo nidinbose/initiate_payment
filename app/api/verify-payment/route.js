@@ -12,6 +12,31 @@ export async function POST(request) {
       name,
     } = await request.json();
 
+    console.log('Payment verification request:', {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature: razorpay_signature ? 'present' : 'missing',
+      name,
+    });
+
+    // Check if all required fields are present
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !name) {
+      console.error('Missing required fields for payment verification');
+      return NextResponse.json(
+        { success: false, message: 'Missing required payment information' },
+        { status: 400 }
+      );
+    }
+
+    // Check if environment variables are available
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      console.error('RAZORPAY_KEY_SECRET is not set');
+      return NextResponse.json(
+        { success: false, message: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     // Verify the signature
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
@@ -19,40 +44,63 @@ export async function POST(request) {
       .update(body.toString())
       .digest('hex');
 
+    console.log('Signature verification:', {
+      expected: expectedSignature,
+      received: razorpay_signature,
+      match: expectedSignature === razorpay_signature
+    });
+
     const isAuthentic = expectedSignature === razorpay_signature;
 
     if (isAuthentic) {
-      // Connect to MongoDB
-      await connectDB();
+      try {
+        // Connect to MongoDB
+        await connectDB();
 
-      // Save payment details to database
-      const payment = new Payment({
-        name,
-        amount: 100, // ₹1 = 100 paise
-        currency: 'INR',
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature,
-        status: 'completed',
-      });
+        // Save payment details to database
+        const payment = new Payment({
+          name,
+          amount: 200, // ₹2 = 200 paise (updated to match new amount)
+          currency: 'INR',
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature,
+          status: 'completed',
+        });
 
-      await payment.save();
+        await payment.save();
 
-      return NextResponse.json({
-        success: true,
-        message: 'Payment verified and saved successfully',
-        payment: payment,
-      });
+        console.log('Payment saved successfully:', payment._id);
+
+        return NextResponse.json({
+          success: true,
+          message: 'Payment verified and saved successfully',
+          paymentId: payment._id,
+        });
+      } catch (dbError) {
+        console.error('Database error:', dbError);
+        // Even if DB save fails, payment is still verified
+        return NextResponse.json({
+          success: true,
+          message: 'Payment verified successfully (database save failed)',
+          warning: 'Payment verified but not saved to database',
+        });
+      }
     } else {
+      console.error('Signature verification failed');
       return NextResponse.json(
-        { success: false, message: 'Payment verification failed' },
+        { success: false, message: 'Payment signature verification failed' },
         { status: 400 }
       );
     }
   } catch (error) {
     console.error('Payment verification error:', error);
     return NextResponse.json(
-      { success: false, message: 'Payment verification failed' },
+      { 
+        success: false, 
+        message: 'Payment verification failed',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     );
   }
