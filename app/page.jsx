@@ -17,7 +17,7 @@ export default function Home() {
             The 2-Hour Masterclass to Hack Your Lazy Brain into Maximum Productivity.
           </p>
             <div className='mx-auto'>
-              <img src="./Images/P1.jpg" alt="" className='w-96 h-auto object-cover mx-auto' />
+              <img src="/Images/P1.jpg" alt="" className='w-96 h-auto object-cover mx-auto' />
             </div>
           {/* Floating Payment Button */}
           <div className="fixed bottom-5 right-5 z-50">
