@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 
 import { useRouter } from 'next/navigation';
 
@@ -16,9 +17,15 @@ export default function Home() {
           <p className="text-lg md:text-xl lg:text-2xl mb-10 text-gray-300 italic">
             The 2-Hour Masterclass to Hack Your Lazy Brain into Maximum Productivity.
           </p>
-            <div className='mx-auto'>
-              <img src="/Images/P1.jpg" alt="" className='w-96 h-auto object-cover mx-auto' />
-            </div>
+            <div className="mx-auto">
+  <Image
+    src="/Images/P1.jpg"
+    alt="Poster"
+    width={384} 
+    height={256}
+    className="object-cover mx-auto"
+  />
+</div>
           {/* Floating Payment Button */}
           <div className="fixed bottom-5 right-5 z-50">
             <button
