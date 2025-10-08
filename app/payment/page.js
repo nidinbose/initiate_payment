@@ -22,7 +22,7 @@ export default function PaymentPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: name.trim(), amount: 200 }), // ₹2 = 200 paise
+        body: JSON.stringify({ name: name.trim(), amount: 9900 }), 
       });
 
       const data = await response.json();
@@ -120,7 +120,7 @@ export default function PaymentPage() {
           <div className="bg-gradient-to-r from-yellow-500/20 to-orange-600/20 rounded-lg p-4 border border-yellow-500/30">
             <div className="flex justify-between items-center">
               <span className="text-gray-300">Amount to pay:</span>
-              <span className="text-2xl font-bold text-yellow-400">₹2</span>
+              <span className="text-2xl font-bold text-yellow-400">₹99</span>
             </div>
           </div>
 
