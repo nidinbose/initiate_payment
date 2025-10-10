@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 export default function PaymentPage() {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false); 
   const router = useRouter();
 
   const handlePayment = async () => {
@@ -19,10 +20,8 @@ export default function PaymentPage() {
     try {
       const response = await fetch('/api/create-order', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: name.trim(), amount: 9900 }), 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), amount: 100 }),
       });
 
       const data = await response.json();
@@ -36,12 +35,11 @@ export default function PaymentPage() {
           description: 'Payment for UNSTUCK 2-Hour Masterclass',
           order_id: data.order.id,
           handler: async function (response) {
+            setIsVerifying(true); 
             try {
               const verifyResponse = await fetch('/api/verify-payment', {
                 method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
@@ -51,28 +49,23 @@ export default function PaymentPage() {
               });
 
               const verifyData = await verifyResponse.json();
-              
+
               if (verifyData.success) {
-                router.push('/success');
+                window.location.href = "https://chat.whatsapp.com/KAiPmX0Q8bw7jiCYSNOwnJ?mode=ems_share_t";
               } else {
                 alert('Payment verification failed: ' + verifyData.message);
+                router.push('/');
               }
             } catch (error) {
               console.error('Payment verification error:', error);
               alert('Payment verification failed. Please contact support.');
+            } finally {
+              setIsVerifying(false); 
             }
           },
-          prefill: {
-            name: name.trim(),
-          },
-          theme: {
-            color: '#F59E0B',
-          },
-          modal: {
-            ondismiss: function() {
-              setIsLoading(false);
-            }
-          }
+          prefill: { name: name.trim() },
+          theme: { color: '#F59E0B' },
+          modal: { ondismiss: () => setIsLoading(false) },
         };
 
         const razorpay = new window.Razorpay(options);
@@ -89,12 +82,32 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-300 via-blue-600 to-black text-white flex items-center justify-center p-4">
+    <div className="relative min-h-screen bg-gradient-to-br from-blue-300 via-blue-600 to-black text-white flex items-center justify-center p-4">
+      {/* Verification Overlay 👇 */}
+      {isVerifying && (
+        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-400 mb-6"></div>
+          <p className="text-lg font-semibold text-yellow-300 animate-pulse">
+            Verifying your payment...
+          </p>
+        </div>
+      )}
+
       <div className="max-w-md w-full bg-black/40 backdrop-blur-sm rounded-2xl shadow-xl p-8 space-y-6 border border-white/10">
         <div className="text-center">
           <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            <svg
+              className="w-8 h-8 text-black"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+              />
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">UNSTUCK Masterclass</h1>
@@ -131,16 +144,37 @@ export default function PaymentPage() {
           >
             {isLoading ? (
               <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-black"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Processing...
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
                 </svg>
                 Pay ₹99 Now
               </>
@@ -149,9 +183,7 @@ export default function PaymentPage() {
         </div>
 
         <div className="text-center">
-          <p className="text-xs text-gray-400">
-            Secure payment powered by Razorpay
-          </p>
+          <p className="text-xs text-gray-400">Secure payment powered by Razorpay</p>
         </div>
       </div>
     </div>
